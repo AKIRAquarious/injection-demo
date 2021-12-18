@@ -29,7 +29,7 @@ def search():
     rows = db.execute(f"""
         select id, name, description
         from products
-        where name like '%{query}%'
+        where name = '{query}'
     """).fetchall()
     conn.commit()
     conn.close()
@@ -54,8 +54,8 @@ def securedSearch():
     rows = db.execute("""
         select id, name, description
         from products
-        where name like ?
-    """, [f"%{query}%"]).fetchall()
+        where name = ?
+    """, [query]).fetchall()
     conn.commit()
     conn.close()
 
