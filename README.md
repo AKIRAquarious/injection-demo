@@ -1,4 +1,4 @@
-Đây là một công cụ tìm kiếm đơn giản trong hệ thống của 1 cửa hàng nhầm mô phỏng môi trường sản phẩm/ứng dụng thực tế. Muc đích đặt ra cho ứng dụng này chỉ để khách hàng có thể tìm kiếm/tra cứu thông tin sản phẩm.
+Đây là một công cụ tìm kiếm đơn giản trong hệ thống của 1 cửa hàng nhằm mô phỏng môi trường sản phẩm/ứng dụng thực tế. Muc đích đặt ra cho ứng dụng này chỉ để khách hàng có thể tìm kiếm/tra cứu thông tin sản phẩm.
 
 Bản demo này bao gồm:
 
@@ -10,11 +10,11 @@ Về phía cơ sở dữ liệu, có 3 bảng dữ liệu đã được dựng s
 
 Về backend, có 2 đường dẫn gọi đến server, `/search` và `/secured-search`. 2 đường dẫn này nhận cùng 1 loại tham số giống nhau, và đều giúp tìm được các sản phẩm trong bảng dữ liêu `Products`. `/search` xử lý tham số sai cách, và có khả năng gây rò rỉ dữ liệu nếu bị tấn công. Ngược lại `/secured-search` sẽ chuẩn bị query đúng cách, ngăn chặn được các cuộc tấn công SQL Injection.
 
-Client là 1 ứng dụng đơn giản, với 1 input để nhập từ khoá hoặc tấn công cơ sở dữ liệu. Ở đây cũng bao gồm những ví dụ đã được chuẩn bị sẵn theo trình tự các bước để truy cập vào tất cả các bảng dữ liệu trong hệ thống, 1 khu vực để hiển thị kết quả từ backend và chuỗi SQL được sử dụng để lấy được những kết quả đó.
+Demo này là 1 ứng dụng đơn giản, với 1 input để nhập từ khoá hoặc tấn công cơ sở dữ liệu. Ở đây cũng bao gồm những ví dụ đã được chuẩn bị sẵn theo trình tự các bước để truy cập vào tất cả các bảng dữ liệu trong hệ thống, 1 khu vực để hiển thị kết quả từ backend và chuỗi SQL được sử dụng để lấy được những kết quả đó.
 
-Cac bước tấn công như sau:
+Các bước tấn công như sau:
 
-1. Đầu tiên, ta thực hiện 1 phép tìm kiếm thông thường. Dựa vào kết quả trên, ta có thể đoán được cách query được chuẩn bị. Từ đó ta sẽ chuẩn bị tấn công bằng SQL Injection. Trong ví dụ này ta thấy `apple` và `pp` đều cho ra kết quả giống nhau, với mỗi kết quả có 3 cột dữ liệu. Từ đó, ta có thể đoán được đây là phép so sánh `LIKE` với cấu trúc:
+1. Đầu tiên, ta thực hiện 1 phép tìm kiếm thông thường. Dựa vào kết quả trên, ta có thể đoán được cách query được chuẩn bị. Từ đó ta sẽ chuẩn bị tấn công bằng SQL Injection. Trong ví dụ này ta thấy `apple` hoặc `orange` đều cho ra kết quả là 3 cột dữ liệu. Từ đó, ta có thể đoán được cấu trúc của hệ thống này:
 
 ```
 apple
@@ -36,9 +36,9 @@ orange
 2. Dựa vào đây, ta có thể chuẩn bị được đòn tấn công đầu tiên. Chỉ cần ta:
 
 - Lấy đúng 3 cột từ mọi bảng dữ liệu.
-- Dấu `'` sẽ kết thúc query, nên ta có thể chèn thêm ''=' để biến nó này 1 phép so sánh luôn đúng.
+- Dấu `'` sẽ kết thúc query, nên ta có thể chèn thêm `''='` để biến nó này 1 phép so sánh luôn đúng.
 - Kèm thêm hàm `UNION`.
-  Ta có thể lấy được mọi dữ liệu trong hệ thống. Dù không biết đây là cơ sở dữ liêu nào, ta vẫn có thử truy cập các bảng chứa schema của từng cơ sở dữ liệu cho đến khi thành công, trong trường hợp này nội dung tìm kiếm sẽ là:
+  Ta có thể lấy được mọi dữ liệu trong hệ thống. Dù không biết đây là cơ sở dữ liệu nào, ta vẫn có thử truy cập các bảng chứa schema của từng cơ sở dữ liệu cho đến khi thành công, trong trường hợp này nội dung tìm kiếm sẽ là:
 
 ```
 ' UNION SELECT type, tbl_name, sql FROM sqlite_master WHERE ''='
@@ -52,6 +52,7 @@ orange
 		WHERE ''=''
 
 ```
+với `master`thường là 1 database chứa thông tin của tất cả các database khác trong hệ thống.
 
 Query trên cho phép ta lấy được thông tin schema của tất cả các bảng còn lại trong hệ thống.
 
