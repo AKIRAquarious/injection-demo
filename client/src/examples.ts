@@ -6,5 +6,5 @@ const examples: string[] = [
 ];
 
 export const injectionExamples = examples.map(
-  (example) => `%' ${example} '%'='`
+  (example) => `' ${example} '%'='`
 );
