@@ -91,3 +91,4 @@ Query trên cho phép ta lấy được thông tin schema của tất cả các 
 				WHERE ''=''
 
 ```
+- Nếu thực hiện lại những ví dụ trên bằng `secured search`, ta sẽ không lấy được dữ liệu. Nhìn vào query của server, ta có thể nhận thấy query đã bị thay đổi. Điều này là nhờ ta đã xử lý tham số 1 cách chính xác bằng các công cụ được cung cấp sẵn bởi SQLite trong Python, qua đó ngăn chặn được SQL Injection.
